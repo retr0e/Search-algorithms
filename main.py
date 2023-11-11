@@ -103,16 +103,23 @@ while run_program:
             else:
                 print('Element znajduje sie na pozycji: ', result)
                 print(operation_data[result])
-            print('Czas wyszukiwania wynosil: ', round(end_time - start_time, 2), ' milisekund')
+            print('Czas wyszukiwania liniowego wynosil: ', round(end_time - start_time, 2), ' milisekund')
         case 3:
             search_data = int(input('Jaka wartość chcesz wyszukać?'))
+            start_time = time.time()
             result = binary_search(operation_data, 0, len(operation_data) - 1, search_data)
+            end_time = time.time()
             print(result)
             print(operation_data[result])
+            print('Czas wyszukiwania binaernego wynosil: ', round(end_time - start_time, 2), ' milisekund')
         case 4:
             pattern = create_pattern()
+            start_time = time.time()
             pattern_search(operation_data, pattern)
+            end_time = time.time()
+            print('Czas wyszukiwania binaernego wynosil: ', round(end_time - start_time, 2), ' milisekund')
         case 5:
-            print('That would be funny')
+            
         case 6:
+            print('Bye Bye!')
             run_program = False
