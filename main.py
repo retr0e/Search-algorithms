@@ -14,6 +14,8 @@ def create_operation_values(values):
     tab.sort()
     return tab
 
+# --------- Linear search ---------
+
 
 def linear_search(values):
     s_data = int(input('Jaka wartość chcesz wyszukać?\n'))
@@ -21,6 +23,8 @@ def linear_search(values):
         if values[i] == s_data:
             return i
     return -1
+
+# --------- Binary search ---------
 
 
 def binary_search(values, beg, end, search):
@@ -34,38 +38,60 @@ def binary_search(values, beg, end, search):
             return binary_search(values, beg, pivot - 1, search)
     return -1
 
-
-def pattern_search(values, search_pattern):
-    result = []
-    for i in values:
-        if i + len(search_pattern) >= len(values):
-            break
-
-        pattern_counter = 0
-        if values[i] == search_pattern[0]:
-            for j in range(0, len(search_pattern)):
-                print(j)
-                if values[i + j] == search_pattern[j]:
-                    pattern_counter += 1
-
-        if pattern_counter == len(search_pattern):
-            result.append(i)
-
-    print(result)
-    return result
+# --------- Linked-list search ---------
 
 
-def create_pattern():
-    run_creation = True
-    result = []
-    while run_creation:
-        symbol = input('Podaj liczbe ktora ma zawierac łancuch (znak: x wyłącza stumien wejscia): ')
-        if symbol != "x":
-            result.append(int(symbol))
+class Cell:
+    def __init__(self, value):
+        self.value = value
+        self.sibling = None
+
+
+class ChainNumber:
+
+    def add_chain(self, beg, element_to_insert):
+        if not beg:
+            return Cell(element_to_insert)
+
+        if beg.sibling:
+            self.add_chain(beg.sibling, element_to_insert)
         else:
-            run_creation = False
-    print(result)
-    return result
+            beg.sibling = Cell(element_to_insert)
+
+        return beg
+        # if not beg:
+        #     return Cell(element_to_insert)
+        #
+        # while beg.sibling:
+        #     beg = beg.sibling
+        #
+        # beg.sibling = Cell(element_to_insert)
+
+    def search(self, beg, searched_element):
+        if not beg or beg.value == searched_element:
+            return beg
+
+        if beg.sibling:
+            return self.search(beg.sibling, searched_element)
+        else:
+            return None
+
+        # if not beg or beg.value == searched_element:
+        #     return beg
+        #
+        # while beg.sibling:
+        #     if beg.value == searched_element:
+        #         return beg
+        #     else:
+        #         beg = beg.sibling
+
+    def print_chain(self, beg):
+        if not beg:
+            return
+
+        if beg.sibling:
+            print(beg.value, ', ')
+            self.print_chain(beg.sibling)
 
 # --------- Implementation Of AVL Tree ---------
 
@@ -79,6 +105,7 @@ class Node:
 
 
 class AVLTree:
+
     def insert(self, root, value):
         if not root:
             return Node(value)
@@ -190,7 +217,7 @@ while run_program:
                 print(operation_data[result])
             print('Czas wyszukiwania liniowego wynosil: ', end_time - start_time, ' milisekund')
         case 3:
-            search_data = int(input('Jaka wartość chcesz wyszukać?'))
+            search_data = int(input('Jaka wartość chcesz wyszukać?\n'))
             start_time = time.time()
             result = binary_search(operation_data, 0, len(operation_data) - 1, search_data)
             end_time = time.time()
@@ -198,21 +225,33 @@ while run_program:
             print(operation_data[result])
             print('Czas wyszukiwania binaernego wynosil: ', end_time - start_time, ' milisekund')
         case 4:
-            pattern = create_pattern()
+            chain_list = ChainNumber()
+            nexus = None
+            for element in operation_data:
+                nexus = chain_list.add_chain(nexus, element)
+            search_data = int(input('Jaka wartość chcesz wyszukać?\n'))
+            # chain_list.print_chain(nexus)
             start_time = time.time()
-            pattern_search(operation_data, pattern)
+            result = chain_list.search(nexus, search_data)
             end_time = time.time()
-            print('Czas wyszukiwania łancuchowego wynosil: ', round(end_time - start_time, 2), ' milisekund')
+            if not result:
+                print('Nie znaleziono takiego elementu w zbiorze!')
+            else:
+                print(result.value)
+            print('Czas wyszukiwania łancuchowego wynosil: ', end_time - start_time, ' milisekund')
         case 5:
             avl_tree = AVLTree()
             root = None
             for element in operation_data:
                 root = avl_tree.insert(root, element)
-            search_data = int(input('Jaka wartość chcesz wyszukać?'))
+            search_data = int(input('Jaka wartość chcesz wyszukać?\n'))
             start_time = time.time()
             result = avl_tree.search(root, search_data)
             end_time = time.time()
-            print(result.value)
+            if not result:
+                print('Nie znaleziono takiego elementu w zbiorze!')
+            else:
+                print(result.value)
             print('Czas wyszukiwania elementu za pomocą drzewa AVL wynosil: ', end_time - start_time,
                   ' milisekund')
         case 6:
