@@ -10,7 +10,7 @@ import time
 def create_operation_values(values):
     tab = []
     for i in range(0, values):
-        tab.append(random.randint(0, 100))
+        tab.append(random.randint(0, 100000))
     tab.sort()
     return tab
 
@@ -70,6 +70,91 @@ def create_pattern():
 # --------- Implementation Of AVL Tree ---------
 
 
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.left = None
+        self.right = None
+        self.height = 1
+
+
+class AVLTree:
+    def insert(self, root, value):
+        if not root:
+            return Node(value)
+        elif value < root.value:
+            root.left = self.insert(root.left, value)
+        else:
+            root.right = self.insert(root.right, value)
+
+        root.height = 1 + max(self.get_height(root.left), self.get_height(root.right))
+
+        balance = self.get_balance(root)
+
+        # Rotacje
+        if balance > 1:
+            if value < root.left.value:
+                return self.right_rotate(root)
+            else:
+                root.left = self.left_rotate(root.left)
+                return self.right_rotate(root)
+
+        if balance < -1:
+            if value > root.right.value:
+                return self.left_rotate(root)
+            else:
+                root.right = self.right_rotate(root.right)
+                return self.left_rotate(root)
+
+        return root
+
+    def left_rotate(self, z):
+        if z is None or z.right is None:
+            return z
+
+        y = z.right
+        T2 = y.left
+
+        y.left = z
+        z.right = T2
+
+        z.height = 1 + max(self.get_height(z.left), self.get_height(z.right))
+        y.height = 1 + max(self.get_height(y.left), self.get_height(y.right))
+
+        return y
+
+    def right_rotate(self, y):
+        if y is None or y.left is None:
+            return y
+
+        x = y.left
+        T2 = x.right
+
+        x.right = y
+        y.left = T2
+
+        y.height = 1 + max(self.get_height(y.left), self.get_height(y.right))
+        x.height = 1 + max(self.get_height(x.left), self.get_height(x.right))
+
+        return x
+
+    def get_height(self, root):
+        if not root:
+            return 0
+        return root.height
+
+    def get_balance(self, root):
+        if not root:
+            return 0
+        return self.get_height(root.left) - self.get_height(root.right)
+
+    def search(self, root, value):
+        if not root or root.value == value:
+            return root
+
+        if value < root.value:
+            return self.search(root.left, value)
+        return self.search(root.right, value)
 
 # -------------Main program-------------
 
@@ -103,7 +188,7 @@ while run_program:
             else:
                 print('Element znajduje sie na pozycji: ', result)
                 print(operation_data[result])
-            print('Czas wyszukiwania liniowego wynosil: ', round(end_time - start_time, 2), ' milisekund')
+            print('Czas wyszukiwania liniowego wynosil: ', end_time - start_time, ' milisekund')
         case 3:
             search_data = int(input('Jaka wartość chcesz wyszukać?'))
             start_time = time.time()
@@ -111,15 +196,25 @@ while run_program:
             end_time = time.time()
             print(result)
             print(operation_data[result])
-            print('Czas wyszukiwania binaernego wynosil: ', round(end_time - start_time, 2), ' milisekund')
+            print('Czas wyszukiwania binaernego wynosil: ', end_time - start_time, ' milisekund')
         case 4:
             pattern = create_pattern()
             start_time = time.time()
             pattern_search(operation_data, pattern)
             end_time = time.time()
-            print('Czas wyszukiwania binaernego wynosil: ', round(end_time - start_time, 2), ' milisekund')
+            print('Czas wyszukiwania łancuchowego wynosil: ', round(end_time - start_time, 2), ' milisekund')
         case 5:
-            
+            avl_tree = AVLTree()
+            root = None
+            for element in operation_data:
+                root = avl_tree.insert(root, element)
+            search_data = int(input('Jaka wartość chcesz wyszukać?'))
+            start_time = time.time()
+            result = avl_tree.search(root, search_data)
+            end_time = time.time()
+            print(result.value)
+            print('Czas wyszukiwania elementu za pomocą drzewa AVL wynosil: ', end_time - start_time,
+                  ' milisekund')
         case 6:
             print('Bye Bye!')
             run_program = False
