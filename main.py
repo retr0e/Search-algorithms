@@ -1,4 +1,8 @@
 import random
+import time
+
+# Założenia programu są aby porównać czasy i zoobrazować złożoności obliczeniowe
+# 4 wyszukiwań. Do badania wykorzystane będą w listach posortowanych
 
 # -------------Functions-------------
 
@@ -6,20 +10,29 @@ import random
 def create_operation_values(values):
     tab = []
     for i in range(0, values):
-        tab.append(random.randint(0, values))
+        tab.append(random.randint(0, 100))
     tab.sort()
     return tab
 
 
 def linear_search(values):
-    search_data = int(input('Jaka wartość chcesz wyszukać?'))
+    s_data = int(input('Jaka wartość chcesz wyszukać?\n'))
     for i in range(0, len(values)):
-        if values[i] == search_data:
+        if values[i] == s_data:
             return i
     return -1
 
 
-# def binary_search(values, search_data):
+def binary_search(values, beg, end, search):
+    if beg <= end:
+        pivot = int((beg + end) / 2)
+        if values[pivot] == search:
+            return pivot
+        elif values[pivot] < search:
+            return binary_search(values, pivot + 1, end, search)
+        else:
+            return binary_search(values, beg, pivot - 1, search)
+    return -1
 
 
 def pattern_search(values, search_pattern):
@@ -62,7 +75,7 @@ def create_pattern():
 
 
 run_program = True
-operation_data = create_operation_values(20)
+operation_data = create_operation_values(30)
 
 while run_program:
 
@@ -82,16 +95,24 @@ while run_program:
             new_size = int(input("Podaj nowa ilosc: "))
             operation_data = create_operation_values(new_size)
         case 2:
+            start_time = time.time()
             result = linear_search(operation_data)
+            end_time = time.time()
             if result < 0:
                 print('Element nie znajduje sie w zbiorze')
             else:
                 print('Element znajduje sie na pozycji: ', result)
                 print(operation_data[result])
+            print('Czas wyszukiwania wynosil: ', round(end_time - start_time, 2), ' milisekund')
+        case 3:
+            search_data = int(input('Jaka wartość chcesz wyszukać?'))
+            result = binary_search(operation_data, 0, len(operation_data) - 1, search_data)
+            print(result)
+            print(operation_data[result])
         case 4:
             pattern = create_pattern()
             pattern_search(operation_data, pattern)
         case 5:
-            print()
+            print('That would be funny')
         case 6:
             run_program = False
