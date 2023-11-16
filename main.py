@@ -38,60 +38,34 @@ def binary_search(values, beg, end, search):
             return binary_search(values, beg, pivot - 1, search)
     return -1
 
-# --------- Linked-list search ---------
+# --------- Jump search ---------
 
 
-class Cell:
-    def __init__(self, value):
-        self.value = value
-        self.sibling = None
+def jump_search(values, searched_value):
+    jump = 4
+    jump_control = 0
 
+    backwards = False
 
-class ChainNumber:
+    while jump_control + jump < len(values):
 
-    def add_chain(self, beg, element_to_insert):
-        if not beg:
-            return Cell(element_to_insert)
+        if values[jump_control] == searched_value:
+            return jump_control
 
-        if beg.sibling:
-            self.add_chain(beg.sibling, element_to_insert)
-        else:
-            beg.sibling = Cell(element_to_insert)
+        if values[jump_control] > searched_value:
+            backwards = True
+            break
 
-        return beg
-        # if not beg:
-        #     return Cell(element_to_insert)
-        #
-        # while beg.sibling:
-        #     beg = beg.sibling
-        #
-        # beg.sibling = Cell(element_to_insert)
+        jump_control += jump
 
-    def search(self, beg, searched_element):
-        if not beg or beg.value == searched_element:
-            return beg
-
-        if beg.sibling:
-            return self.search(beg.sibling, searched_element)
-        else:
-            return None
-
-        # if not beg or beg.value == searched_element:
-        #     return beg
-        #
-        # while beg.sibling:
-        #     if beg.value == searched_element:
-        #         return beg
-        #     else:
-        #         beg = beg.sibling
-
-    def print_chain(self, beg):
-        if not beg:
-            return
-
-        if beg.sibling:
-            print(beg.value, ', ')
-            self.print_chain(beg.sibling)
+    if backwards:
+        for i in range(jump_control, 0, -1):
+            if values[i] == searched_value:
+                return i
+    else:
+        for i in range(0, len(values)):
+            if values[i] == searched_value:
+                return i
 
 # --------- Implementation Of AVL Tree ---------
 
@@ -196,7 +170,7 @@ while run_program:
     print("1 - Zmien zakres i ilość danych")
     print("2 - Wyszukiwanie liniowe")
     print("3 - Wyszukiwanie binarne")
-    print("4 - Wyszukiwanie łańcuchowe")
+    print("4 - Wyszukiwanie skokowe")
     print("5 - Wyszukiwanie drzewiaste (AVL)")
     print("6 - Wyjscie")
 
@@ -223,22 +197,17 @@ while run_program:
             end_time = time.time()
             print(result)
             print(operation_data[result])
-            print('Czas wyszukiwania binaernego wynosil: ', end_time - start_time, ' milisekund')
+            print('Czas wyszukiwania binarnego wynosil: ', end_time - start_time, ' milisekund')
         case 4:
-            chain_list = ChainNumber()
-            nexus = None
-            for element in operation_data:
-                nexus = chain_list.add_chain(nexus, element)
             search_data = int(input('Jaka wartość chcesz wyszukać?\n'))
-            # chain_list.print_chain(nexus)
             start_time = time.time()
-            result = chain_list.search(nexus, search_data)
+            result = jump_search(operation_data, search_data)
             end_time = time.time()
             if not result:
                 print('Nie znaleziono takiego elementu w zbiorze!')
             else:
-                print(result.value)
-            print('Czas wyszukiwania łancuchowego wynosil: ', end_time - start_time, ' milisekund')
+                print(result)
+            print('Czas wyszukiwania skokowego wynosil: ', end_time - start_time, ' milisekund')
         case 5:
             avl_tree = AVLTree()
             root = None
